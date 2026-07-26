@@ -55,7 +55,7 @@ def get_stats():
     response_model=List[schemas.Task],
     status_code=status.HTTP_200_OK,
     summary="Reset Tasks",
-    description="Restores the initial state of tasks in SQLite database.",
+    description="Restores the initial state of tasks in PostgreSQL database.",
 )
 def reset_tasks():
     """Bonus endpoint to restore initial tasks in database."""
@@ -73,7 +73,7 @@ def get_tasks(
     done: Optional[bool] = Query(default=None, description="Filter by completion status"),
     search: Optional[str] = Query(default=None, description="Search tasks by title keyword"),
 ):
-    """Retrieve tasks with optional filter and search parameters from SQLite database."""
+    """Retrieve tasks with optional filter and search parameters from PostgreSQL database."""
     return data.get_all_tasks(done=done, search=search)
 
 
@@ -88,7 +88,7 @@ def get_tasks(
     description="Retrieve details of a single task by its unique identifier.",
 )
 def get_task(id: int):
-    """Retrieve one task by ID from SQLite database."""
+    """Retrieve one task by ID from PostgreSQL database."""
     task = data.get_task_by_id(id)
     if not task:
         raise HTTPException(
@@ -106,10 +106,10 @@ def get_task(id: int):
         400: {"model": schemas.ErrorResponse, "description": "Title missing or empty"}
     },
     summary="Create Task",
-    description="Creates a new task with auto-assigned ID and done set to false in SQLite database.",
+    description="Creates a new task with auto-assigned ID and done set to false in PostgreSQL database.",
 )
 def create_task(payload: schemas.TaskCreate):
-    """Create a new task in SQLite database."""
+    """Create a new task in PostgreSQL database."""
     return data.create_task(title=payload.title)
 
 
@@ -122,10 +122,10 @@ def create_task(payload: schemas.TaskCreate):
         404: {"model": schemas.ErrorResponse, "description": "Task not found"},
     },
     summary="Update Task",
-    description="Update title and/or done status of an existing task in SQLite database.",
+    description="Update title and/or done status of an existing task in PostgreSQL database.",
 )
 def update_task(id: int, payload: schemas.TaskUpdate):
-    """Update an existing task in SQLite database."""
+    """Update an existing task in PostgreSQL database."""
     if payload.title is None and payload.done is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -154,10 +154,10 @@ def update_task(id: int, payload: schemas.TaskUpdate):
         404: {"model": schemas.ErrorResponse, "description": "Task not found"}
     },
     summary="Delete Task",
-    description="Deletes a task from SQLite database by its unique identifier.",
+    description="Deletes a task from PostgreSQL database by its unique identifier.",
 )
 def delete_task(id: int):
-    """Delete a task by ID from SQLite database."""
+    """Delete a task by ID from PostgreSQL database."""
     deleted = data.delete_task(id)
     if not deleted:
         raise HTTPException(

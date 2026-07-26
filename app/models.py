@@ -7,7 +7,7 @@ from sqlmodel import SQLModel, Field
 
 class Task(SQLModel, table=True):
     """
-    SQLModel representation of the 'tasks' table in SQLite.
+    SQLModel representation of the 'tasks' table in PostgreSQL.
     """
     __tablename__ = "tasks"
 

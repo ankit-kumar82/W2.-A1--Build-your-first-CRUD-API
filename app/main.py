@@ -20,8 +20,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="FlyRank Task API",
-    description="FastAPI SQLite CRUD API with SQLModel for FlyRank Backend Internship Assignment.",
-    version="2.0.0",
+    description="FastAPI PostgreSQL CRUD API with SQLModel and Docker for FlyRank Backend Internship Assignment.",
+    version="3.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,

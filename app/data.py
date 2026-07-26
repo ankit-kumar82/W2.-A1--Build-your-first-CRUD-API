@@ -1,5 +1,5 @@
 """
-SQLite database CRUD operations for the Task API using SQLModel.
+PostgreSQL database CRUD operations for the Task API using SQLModel.
 """
 from typing import List, Dict, Any, Optional
 from sqlmodel import Session, select, delete
@@ -17,7 +17,7 @@ INITIAL_TASKS: List[Dict[str, Any]] = [
 
 def get_all_tasks(done: Optional[bool] = None, search: Optional[str] = None) -> List[Task]:
     """
-    Retrieve tasks from SQLite database with optional status filter and search query.
+    Retrieve tasks from PostgreSQL database with optional status filter and search query.
     """
     with Session(engine) as session:
         statement = select(Task)
@@ -35,13 +35,13 @@ def get_all_tasks(done: Optional[bool] = None, search: Optional[str] = None) -> 
 
 
 def get_task_by_id(task_id: int) -> Optional[Task]:
-    """Retrieve a single task by ID from SQLite database."""
+    """Retrieve a single task by ID from PostgreSQL database."""
     with Session(engine) as session:
         return session.get(Task, task_id)
 
 
 def create_task(title: str) -> Task:
-    """Create a new task in SQLite database with default done status set to False."""
+    """Create a new task in PostgreSQL database with default done status set to False."""
     with Session(engine) as session:
         new_task = Task(title=title, done=False)
         session.add(new_task)
@@ -51,7 +51,7 @@ def create_task(title: str) -> Task:
 
 
 def update_task(task_id: int, title: Optional[str] = None, done: Optional[bool] = None) -> Optional[Task]:
-    """Update an existing task in SQLite database."""
+    """Update an existing task in PostgreSQL database."""
     with Session(engine) as session:
         task = session.get(Task, task_id)
         if task is None:
@@ -69,7 +69,7 @@ def update_task(task_id: int, title: Optional[str] = None, done: Optional[bool] 
 
 
 def delete_task(task_id: int) -> bool:
-    """Delete a task by ID from SQLite database."""
+    """Delete a task by ID from PostgreSQL database."""
     with Session(engine) as session:
         task = session.get(Task, task_id)
         if task is None:
@@ -81,15 +81,15 @@ def delete_task(task_id: int) -> bool:
 
 
 def reset_tasks_db() -> List[Task]:
-    """Reset the SQLite tasks table to the initial seed state."""
+    """Reset the PostgreSQL tasks table to the initial seed state."""
     with Session(engine) as session:
         session.exec(delete(Task))
         session.commit()
 
         sample_tasks = [
-            Task(id=1, title="Learn FastAPI", done=False),
-            Task(id=2, title="Complete Assignment", done=False),
-            Task(id=3, title="Push to GitHub", done=True),
+            Task(title="Learn FastAPI", done=False),
+            Task(title="Complete Assignment", done=False),
+            Task(title="Push to GitHub", done=True),
         ]
         session.add_all(sample_tasks)
         session.commit()
@@ -98,3 +98,4 @@ def reset_tasks_db() -> List[Task]:
             session.refresh(t)
 
         return sample_tasks
+
