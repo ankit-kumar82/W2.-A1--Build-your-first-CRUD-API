@@ -2,7 +2,7 @@
 Pydantic schemas for request validation and response serialization.
 """
 from typing import List, Optional
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class APIMetadata(BaseModel):
@@ -53,6 +53,8 @@ class Task(TaskBase):
     """Schema representing a complete Task object."""
     id: int = Field(..., description="Unique identifier for the task")
     done: bool = Field(default=False, description="Completion status of the task")
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskStats(BaseModel):

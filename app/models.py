@@ -1,19 +1,22 @@
 """
-In-memory domain models for the Task API.
+SQLModel database models for the Task API.
 """
-from typing import Dict, Any
+from typing import Optional, Dict, Any
+from sqlmodel import SQLModel, Field
 
 
-class TaskModel:
-    """Domain model representing a Task in memory."""
+class Task(SQLModel, table=True):
+    """
+    SQLModel representation of the 'tasks' table in SQLite.
+    """
+    __tablename__ = "tasks"
 
-    def __init__(self, task_id: int, title: str, done: bool = False) -> None:
-        self.id = task_id
-        self.title = title
-        self.done = done
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str = Field(nullable=False)
+    done: bool = Field(default=False, nullable=False)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert model instance to a dictionary representation."""
+        """Convert model instance to dictionary representation."""
         return {
             "id": self.id,
             "title": self.title,

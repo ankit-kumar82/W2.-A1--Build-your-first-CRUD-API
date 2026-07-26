@@ -1,19 +1,30 @@
 """
-Main FastAPI application entry point.
+Main FastAPI application entry point with lifespan database initialization.
 """
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.database import init_db
 from app.routes import router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan event handler to initialize database tables and seed sample data on startup."""
+    init_db()
+    yield
+
 
 app = FastAPI(
     title="FlyRank Task API",
-    description="FastAPI In-Memory CRUD API for FlyRank Backend Internship Assignment.",
-    version="1.0.0",
+    description="FastAPI SQLite CRUD API with SQLModel for FlyRank Backend Internship Assignment.",
+    version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 
@@ -29,7 +40,6 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Custom validation handler to return 400 status with error details for request errors."""
-    # Check if error is due to missing or empty title
     errors = exc.errors()
     msg = "Invalid body or missing fields"
     if errors:
