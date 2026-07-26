@@ -796,6 +796,14 @@ https://w2-a1-build-your-first-crud-api-2.onrender.com
 | GET    | `/stats`      | Task statistics    |
 | POST   | `/reset`      | Reset sample tasks |
 
+
+## API Documentation
+
+| Resource | Link |
+|----------|------|
+| Live API | https://w2-a1-build-your-first-crud-api-2.onrender.com |
+| Swagger UI | https://w2-a1-build-your-first-crud-api-2.onrender.com/docs |
+| ReDoc | https://w2-a1-build-your-first-crud-api-2.onrender.com/redoc |
 ---
 
 ## Git Commit History Strategy (Assignment Stages)
