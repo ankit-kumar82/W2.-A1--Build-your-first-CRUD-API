@@ -720,6 +720,84 @@ On server startup, `tasks.db` will be created automatically in the project root 
 
 ---
 
+You can add this section to your **README.md**.
+
+## Interactive API Documentation
+
+### Swagger UI
+
+Swagger UI provides an interactive interface to explore and test all API endpoints directly from your browser.
+
+**Local:**
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+**Live Deployment:**
+
+```text
+https://w2-a1-build-your-first-crud-api-2.onrender.com/docs
+```
+
+Features:
+
+* Interactive API testing
+* Request and response examples
+* Automatic schema documentation
+* Execute API requests without Postman
+
+---
+
+### ReDoc
+
+ReDoc provides clean, readable API documentation generated from the OpenAPI specification.
+
+**Local:**
+
+```text
+http://127.0.0.1:8000/redoc
+```
+
+**Live Deployment:**
+
+```text
+https://w2-a1-build-your-first-crud-api-2.onrender.com/redoc
+```
+
+Features:
+
+* Professional API documentation
+* Endpoint descriptions
+* Request and response models
+* Parameter details
+* Error response documentation
+
+---
+
+## Live API
+
+**Base URL**
+
+```text
+https://w2-a1-build-your-first-crud-api-2.onrender.com
+```
+
+### Available Endpoints
+
+| Method | Endpoint      | Description        |
+| ------ | ------------- | ------------------ |
+| GET    | `/`           | API metadata       |
+| GET    | `/tasks`      | Get all tasks      |
+| GET    | `/tasks/{id}` | Get task by ID     |
+| POST   | `/tasks`      | Create a new task  |
+| PUT    | `/tasks/{id}` | Update a task      |
+| DELETE | `/tasks/{id}` | Delete a task      |
+| GET    | `/stats`      | Task statistics    |
+| POST   | `/reset`      | Reset sample tasks |
+
+---
+
 ## Git Commit History Strategy (Assignment Stages)
 
 To maintain an exact stage-by-stage git commit history for grading:
