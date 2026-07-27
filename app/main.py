@@ -19,13 +19,41 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="FlyRank Task API",
-    description="FastAPI PostgreSQL CRUD API with SQLModel and Docker for FlyRank Backend Internship Assignment.",
-    version="3.0.0",
+    title="FlyRank Secured Auth & Task API",
+    description="Secure REST API built with FastAPI and Supabase Auth — featuring JWT verification, protected routes, role-based authorization, rate limiting, and Swagger UI documentation.",
+    version="4.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+
+
+def custom_openapi():
+    """Generates custom OpenAPI schema with explicit HTTPBearer security scheme for Swagger UI."""
+    if app.openapi_schema:
+        return app.openapi_schema
+    from fastapi.openapi.utils import get_openapi
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+    if "components" not in openapi_schema:
+        openapi_schema["components"] = {}
+    openapi_schema["components"]["securitySchemes"] = {
+        "HTTPBearer": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+            "description": "Enter your Supabase JWT access token obtained from /auth/login.",
+        }
+    }
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
 
 
 @app.exception_handler(StarletteHTTPException)
