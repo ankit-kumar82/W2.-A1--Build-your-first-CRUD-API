@@ -67,3 +67,57 @@ class TaskStats(BaseModel):
 class ErrorResponse(BaseModel):
     """Schema for error responses."""
     error: str = Field(..., description="Error message description")
+
+
+class UserSignUpRequest(BaseModel):
+    """Schema for user registration request."""
+    email: str = Field(..., description="User email address")
+    password: str = Field(..., description="User password")
+
+    @field_validator("email", "password")
+    @classmethod
+    def validate_not_empty(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("Email and password cannot be empty")
+        return value.strip()
+
+
+class UserLoginRequest(BaseModel):
+    """Schema for user login request."""
+    email: str = Field(..., description="User email address")
+    password: str = Field(..., description="User password")
+
+    @field_validator("email", "password")
+    @classmethod
+    def validate_not_empty(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("Email and password cannot be empty")
+        return value.strip()
+
+
+class RefreshTokenRequest(BaseModel):
+    """Schema for refreshing access token."""
+    refresh_token: str = Field(..., description="Refresh token string")
+
+    @field_validator("refresh_token")
+    @classmethod
+    def validate_not_empty(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("Refresh token cannot be empty")
+        return value.strip()
+
+
+class TokenResponse(BaseModel):
+    """Schema for token authentication response."""
+    access_token: str = Field(..., description="JWT Access Token")
+    refresh_token: Optional[str] = Field(default=None, description="Refresh Token")
+    token_type: str = Field(default="bearer", description="Token type")
+    user: Optional[dict] = Field(default=None, description="Authenticated user info")
+
+
+class UserProfileResponse(BaseModel):
+    """Schema for protected user profile response."""
+    id: str = Field(..., description="User unique identifier")
+    email: str = Field(..., description="User email address")
+    created_at: Optional[str] = Field(default=None, description="Account creation timestamp")
+    role: Optional[str] = Field(default="authenticated", description="User role")
