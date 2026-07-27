@@ -95,7 +95,7 @@ The API will be live at `http://localhost:8000`.
 
 ## 5. Interactive Swagger UI & Bearer Auth
 
-FastAPI provides an interactive OpenAPI / Swagger UI at **`http://localhost:8000/docs`**.
+FastAPI provides an interactive OpenAPI / Swagger UI at **`http://localhost:8000/docs`** (or on the deployed environment at **`https://w2-a1-build-your-first-crud-api-2.onrender.com/docs`**).
 
 1. Open `http://localhost:8000/docs` in your browser.
 2. Click on `POST /auth/login` -> **Try it out** -> enter valid credentials -> execute.
@@ -103,6 +103,14 @@ FastAPI provides an interactive OpenAPI / Swagger UI at **`http://localhost:8000
 4. Click the **Authorize** padlock button at the top right (or next to protected endpoints).
 5. Paste your token into the Value box and click **Authorize**.
 6. Try out any protected endpoint (`GET /protected/profile`, `GET /protected/dashboard`, `POST /auth/logout`) directly from your browser!
+
+### Live Deployment Links
+
+| Resource | URL |
+| :--- | :--- |
+| **Live API Base URL** | [https://w2-a1-build-your-first-crud-api-2.onrender.com](https://w2-a1-build-your-first-crud-api-2.onrender.com) |
+| **Live Interactive Swagger UI** | [https://w2-a1-build-your-first-crud-api-2.onrender.com/docs](https://w2-a1-build-your-first-crud-api-2.onrender.com/docs) |
+| **Live ReDoc API Docs** | [https://w2-a1-build-your-first-crud-api-2.onrender.com/redoc](https://w2-a1-build-your-first-crud-api-2.onrender.com/redoc) |
 
 ---
 
