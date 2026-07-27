@@ -5,6 +5,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app import schemas, data, utils
+from app.auth import get_current_user, require_admin
 from app.rate_limiter import login_limiter
 from app.supabase_client import supabase
 
@@ -109,6 +110,142 @@ def login(payload: schemas.UserLoginRequest):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid login credentials",
+        ) from exc
+
+
+# -----------------------------------------------------------------------------
+# Stage 2, 3, 4 & Stretch: Public & Protected Routes
+# -----------------------------------------------------------------------------
+
+@router.get(
+    "/public/info",
+    status_code=status.HTTP_200_OK,
+    summary="Get Public Info",
+    description="Public endpoint accessible without authentication.",
+)
+def get_public_info():
+    """Public info endpoint accessible without credentials."""
+    return {"message": "Welcome stranger! This info is public."}
+
+
+@router.get(
+    "/protected/profile",
+    response_model=schemas.UserProfileResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        401: {"model": schemas.ErrorResponse, "description": "Unauthorized"}
+    },
+    summary="Get User Profile",
+    description="Protected endpoint returning authenticated user's profile metadata.",
+)
+def get_profile(current_user: dict = Depends(get_current_user)):
+    """Protected profile endpoint guarded by JWT verification middleware."""
+    return {
+        "id": str(current_user.get("id", "")),
+        "email": str(current_user.get("email", "")),
+        "created_at": str(current_user.get("created_at")) if current_user.get("created_at") else None,
+        "role": str(current_user.get("role", "authenticated")),
+    }
+
+
+@router.get(
+    "/protected/dashboard",
+    status_code=status.HTTP_200_OK,
+    responses={
+        401: {"model": schemas.ErrorResponse, "description": "Unauthorized"}
+    },
+    summary="Get Protected Dashboard",
+    description="Second protected endpoint reusing the auth middleware guard.",
+)
+def get_dashboard(current_user: dict = Depends(get_current_user)):
+    """Protected dashboard endpoint."""
+    return {
+        "message": f"Welcome to your private dashboard, {current_user.get('email')}!",
+        "user_id": current_user.get("id"),
+        "status": "authenticated",
+    }
+
+
+@router.get(
+    "/protected/admin",
+    status_code=status.HTTP_200_OK,
+    responses={
+        401: {"model": schemas.ErrorResponse, "description": "Unauthorized"},
+        403: {"model": schemas.ErrorResponse, "description": "Forbidden"},
+    },
+    summary="Get Protected Admin Area",
+    description="Protected endpoint requiring admin privileges. Returns 403 Forbidden for non-admin users.",
+)
+def get_admin_area(admin_user: dict = Depends(require_admin)):
+    """Protected admin endpoint demonstrating 403 Forbidden role authorization."""
+    return {
+        "message": "Welcome Admin! Access granted to restricted area.",
+        "user": admin_user,
+    }
+
+
+@router.post(
+    "/auth/logout",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        401: {"model": schemas.ErrorResponse, "description": "Unauthorized"}
+    },
+    summary="Log Out User",
+    description="Invalidates current user session via Supabase Auth.",
+)
+def logout(current_user: dict = Depends(get_current_user)):
+    """Protected endpoint to sign out current authenticated user."""
+    try:
+        supabase.auth.sign_out()
+    except Exception:
+        pass
+    return None
+
+
+@router.post(
+    "/auth/refresh",
+    response_model=schemas.TokenResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        400: {"model": schemas.ErrorResponse, "description": "Bad Request"},
+        401: {"model": schemas.ErrorResponse, "description": "Invalid refresh token"},
+    },
+    summary="Refresh Access Token",
+    description="Exchanges a valid refresh token for a fresh access token.",
+)
+def refresh_token(payload: schemas.RefreshTokenRequest):
+    """Exchanges a refresh token for a fresh access token via Supabase Auth."""
+    if not payload.refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Refresh token required",
+        )
+    try:
+        res = supabase.auth.refresh_session(payload.refresh_token)
+        session = getattr(res, "session", None)
+        if not res or not session or not getattr(session, "access_token", None):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or expired refresh token",
+            )
+        user_obj = getattr(res, "user", None)
+        user_dict = {
+            "id": getattr(user_obj, "id", None) if user_obj else None,
+            "email": getattr(user_obj, "email", None) if user_obj else None,
+            "created_at": getattr(user_obj, "created_at", None) if user_obj else None,
+        }
+        return {
+            "access_token": session.access_token,
+            "refresh_token": getattr(session, "refresh_token", None),
+            "token_type": "bearer",
+            "user": user_dict,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
         ) from exc
 
 
